@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Date
         id: date
-        run: echo "::set-output name=date::$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+        run: echo "::set-output name=date::$(date -u '+%Y%m%dT%H%M%SZ')"
 
       - name: Checkout
         uses: actions/checkout@v2
