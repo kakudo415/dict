@@ -35,8 +35,7 @@ jobs:
           for RAW_DICT in *.csv; \
             do tail -n +2 ./$RAW_DICT \
               | sed -r 's/(.*),(.*),(.*),(.*)/\2,\1,\4,/g' \
-              > ${{ steps.date.outputs.iso8601_basic }}/macOS/$RAW_DICT; \
-              mv ${{ steps.date.outputs.iso8601_basic }}/macOS/${RAW_DICT} ${{ steps.date.outputs.iso8601_basic }}/macOS/${RAW_DICT%.csv}.txt; \
+              > ${{ steps.date.outputs.iso8601_basic }}/macOS/${RAW_DICT%.csv}.txt; \
             done
 
       # （UTF-8ではエラーを吐くので、UTF-16LEを選択）
@@ -46,9 +45,8 @@ jobs:
           for RAW_DICT in *.csv; do \
             tail -n +2 ./$RAW_DICT \
               | sed -r 's/(.*),(.*),(.*),(.*)/\2\t\1\t\3/g' \
-              | iconv -t UTF-16LE \
-              > ${{ steps.date.outputs.iso8601_basic }}/Windows/$RAW_DICT; \
-            mv ${{ steps.date.outputs.iso8601_basic }}/Windows/${RAW_DICT} ${{ steps.date.outputs.iso8601_basic }}/Windows/${RAW_DICT%.csv}.txt; \
+              | iconv -t SHIFT-JIS \
+              > ${{ steps.date.outputs.iso8601_basic }}/Windows/${RAW_DICT%.csv}.txt;
           done
 
       - name: Archive
