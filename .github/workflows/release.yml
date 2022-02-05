@@ -34,10 +34,11 @@ jobs:
           mkdir -p ${{ steps.date.outputs.iso8601_basic }}/macOS
           tail -n +2 ./math.csv | sed -r 's/(.*),(.*),(.*),(.*)/\2,\1,\4,/g' > ${{ steps.date.outputs.iso8601_basic }}/macOS/dict.txt
       
+      # （UTF-8ではエラーを吐くので、UTF-16LEを選択）
       - name: Export for Windows
         run: |
           mkdir -p ${{ steps.date.outputs.iso8601_basic }}/Windows
-          tail -n +2 ./math.csv | sed -r 's/(.*),(.*),(.*),(.*)/\2\t\1\t\3/g' > ${{ steps.date.outputs.iso8601_basic }}/Windows/dict.txt
+          tail -n +2 ./math.csv | sed -r 's/(.*),(.*),(.*),(.*)/\2\t\1\t\3/g' | iconv -t UTF-16LE > ${{ steps.date.outputs.iso8601_basic }}/Windows/dict.txt
 
       - name: Archive
         run: zip -r ${{ steps.date.outputs.iso8601_basic }}.zip ${{ steps.date.outputs.iso8601_basic }}
