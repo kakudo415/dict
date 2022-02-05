@@ -5,10 +5,10 @@ on:
     types:
       - closed
     branches:
-      - master
+      - main
   push:
     branches:
-      - master
+      - main
 
 jobs:
   release:
