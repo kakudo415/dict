@@ -6,9 +6,13 @@ on:
       - closed
     branches:
       - main
+    paths:
+      - '**.csv'
   push:
     branches:
       - main
+    paths:
+      - '**.csv'
 
 jobs:
   release:
@@ -16,7 +20,9 @@ jobs:
     steps:
       - name: Date
         id: date
-        run: echo "::set-output name=date::$(date -u '+%Y%m%dT%H%M%SZ')"
+        run: |
+          echo "::set-output name=iso8601_basic::$(date -u '+%Y%m%dT%H%M%SZ')"
+          echo "::set-output name=iso8601_extended::$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
 
       - name: Checkout
         uses: actions/checkout@v2
@@ -25,8 +31,16 @@ jobs:
 
       - name: Export for macOS
         run: |
-          mkdir -p releases/macos
-          tail -n +2 ./math.csv | sed -r 's/(.*),(.*),(.*),(.*)/\2,\1,\4,/g' > releases/macos/dict.txt
+          mkdir -p ${{ steps.date.outputs.iso8601_basic }}/macos
+          tail -n +2 ./math.csv | sed -r 's/(.*),(.*),(.*),(.*)/\2,\1,\4,/g' > ${{ steps.date.outputs.iso8601_basic }}/macOS/dict.txt
+      
+      - name: Export for Windows
+        run: |
+          mkdir -p ${{ steps.date.outputs.iso8601_basic }}/windows
+          tail -n +2 ./math.csv | sed -r 's/(.*),(.*),(.*),(.*)/\2\t\1\t\3/g' > ${{ steps.date.outputs.iso8601_basic }}/Windows/dict.txt
+
+      - name: Archive
+        run: zip -r ${{ steps.date.outputs.iso8601_basic }}.zip ${{ steps.date.outputs.iso8601_basic }}
 
       - name: Create release
         id: create_release
@@ -34,8 +48,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.date.outputs.date }}
-          release_name: Release ${{ steps.date.outputs.date }}
+          tag_name: ${{ steps.date.outputs.iso8601_basic }}
+          release_name: Release ${{ steps.date.outputs.iso8601_extended }}
           draft: false
           prerelease: false
 
@@ -45,6 +59,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./releases/macos/dict.txt
-          asset_name: ${{ steps.date.outputs.date }}.txt
-          asset_content_type: text/plain
+          asset_path: ./${{ steps.date.outputs.iso8601_basic }}.zip
+          asset_name: ${{ steps.date.outputs.iso8601_basic }}.zip
+          asset_content_type: application/zip
