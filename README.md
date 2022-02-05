@@ -1,6 +1,7 @@
-# 専門用語 日本語変換辞書
+# TermJa
 
 専門用語を簡単に変換するための辞書ファイルです。
+現在は数学を拡充しています。
 
 ## 使用方法
 
@@ -13,3 +14,5 @@
 #### Windowsの場合
 
 #### macOSの場合
+
+[Macの追加辞書に読み込むためのテキストファイルを作成する](https://support.apple.com/ja-jp/guide/japanese-input-method/jpim10226/mac)
