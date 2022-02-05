@@ -31,12 +31,12 @@ jobs:
 
       - name: Export for macOS
         run: |
-          mkdir -p ${{ steps.date.outputs.iso8601_basic }}/macos
+          mkdir -p ${{ steps.date.outputs.iso8601_basic }}/macOS
           tail -n +2 ./math.csv | sed -r 's/(.*),(.*),(.*),(.*)/\2,\1,\4,/g' > ${{ steps.date.outputs.iso8601_basic }}/macOS/dict.txt
       
       - name: Export for Windows
         run: |
-          mkdir -p ${{ steps.date.outputs.iso8601_basic }}/windows
+          mkdir -p ${{ steps.date.outputs.iso8601_basic }}/Windows
           tail -n +2 ./math.csv | sed -r 's/(.*),(.*),(.*),(.*)/\2\t\1\t\3/g' > ${{ steps.date.outputs.iso8601_basic }}/Windows/dict.txt
 
       - name: Archive
