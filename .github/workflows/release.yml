@@ -24,9 +24,10 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Export for macOS
+      -
         - run: mkdir -p releases/macos
         - run: tail -n +2 ./math.csv | sed -r 's/(.*),(.*),(.*),(.*)/\2,\1,\4,/g' > releases/macos/dict.txt
-        
+
       - name: Create release
         id: create_release
         uses: actions/create-release@v1
@@ -37,7 +38,7 @@ jobs:
           release_name: Release ${{ steps.date.outputs.date }}
           draft: false
           prerelease: false
-      
+
       - name: Upload release
         uses: actions/upload-release-asset@v1
         env:
