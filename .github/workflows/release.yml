@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Date
+        id: date
+        run: echo "::set-output name=date::$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Export for macOS
+        run: mkdir -p releases/macos
+        run: tail -n +2 ./math.csv | sed -r 's/(.*),(.*),(.*),(.*)/\2,\1,\4,/g' > releases/macos/dict.txt
+        
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.date.outputs.date }}
+          release_name: Release ${{ steps.date.outputs.date }}
+          draft: false
+          prerelease: false
+      
+      - name: Upload release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./releases/macos/dict.txt
+          asset_name: ${{ steps.date.outputs.date }}.txt
+          asset_content_type: text/plain
