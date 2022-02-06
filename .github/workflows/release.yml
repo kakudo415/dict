@@ -50,30 +50,32 @@ jobs:
       
       - name: Get version tag
         id: version_tag
-        run: echo "::set-output name=tag::v${{ steps.version.outputs.major }}.${{ steps.version.outputs.minor }}.${{ steps.version.outputs.patch }}"
+        run: |
+          echo "::set-output name=tag::${{ steps.version.outputs.major }}.${{ steps.version.outputs.minor }}.${{ steps.version.outputs.patch }}"
+          echo "::set-output name=vtag::v${{ steps.version.outputs.major }}.${{ steps.version.outputs.minor }}.${{ steps.version.outputs.patch }}"
 
       - name: Export for macOS
         run: |
-          mkdir -p ${{ steps.version_tag.outputs.tag }}/macOS
+          mkdir -p TermJa-${{ steps.version_tag.outputs.tag }}/macOS
           for RAW_DICT in *.csv; \
             do tail -n +2 ./$RAW_DICT \
               | sed -r 's/(.*),(.*),(.*),(.*)/\2,\1,\4,/g' \
-              > ${{ steps.version_tag.outputs.tag }}/macOS/${RAW_DICT%.csv}.txt; \
+              > TermJa-${{ steps.version_tag.outputs.tag }}/macOS/${RAW_DICT%.csv}.txt; \
             done
 
       # （UTF-8ではエラーを吐くので、SHIFT-JISを選択）
       - name: Export for Windows
         run: |
-          mkdir -p ${{ steps.version_tag.outputs.tag }}/Windows
+          mkdir -p TermJa-${{ steps.version_tag.outputs.tag }}/Windows
           for RAW_DICT in *.csv; do \
             tail -n +2 ./$RAW_DICT \
               | sed -r 's/(.*),(.*),(.*),(.*)/\2\t\1\t\3/g' \
               | iconv -t SHIFT-JIS \
-              > ${{ steps.version_tag.outputs.tag }}/Windows/${RAW_DICT%.csv}.txt;
+              > TermJa-${{ steps.version_tag.outputs.tag }}/Windows/${RAW_DICT%.csv}.txt;
           done
 
       - name: Archive
-        run: zip -r ${{ steps.version_tag.outputs.tag }}.zip ${{ steps.version_tag.outputs.tag }}
+        run: zip -r TermJa-${{ steps.version_tag.outputs.tag }}.zip TermJa-${{ steps.version_tag.outputs.tag }}
 
       - name: Create release
         id: create_release
@@ -81,7 +83,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.version_tag.outputs.tag }}
+          tag_name: ${{ steps.version_tag.outputs.vtag }}
           release_name: TermJa ${{ steps.version_tag.outputs.tag }}
           draft: false
           prerelease: false
@@ -92,6 +94,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ steps.version_tag.outputs.tag }}.zip
-          asset_name: ${{ steps.version_tag.outputs.tag }}.zip
+          asset_path: ./TermJa-${{ steps.version_tag.outputs.tag }}.zip
+          asset_name: TermJa-${{ steps.version_tag.outputs.tag }}.zip
           asset_content_type: application/zip
