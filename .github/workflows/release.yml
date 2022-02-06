@@ -23,6 +23,9 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
       
+      - name: fetch unshallow
+        run: git fetch --prune --unshallow
+      
       - name: Get current version
         id: current_version
         run: |
