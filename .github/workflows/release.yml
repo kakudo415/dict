@@ -30,7 +30,7 @@ jobs:
         id: current_version
         run: |
           LATEST_TAG=`git describe --tags --abbrev=0`
-          if [[ ${testvar} =~ ([0-9]+)\.([0-9]+)\.([0-9]+) ]]
+          if [[ ${LATEST_TAG} =~ v([0-9]+)\.([0-9]+)\.([0-9]+) ]]
           then
             echo "::set-output name=major::${BASH_REMATCH[1]}"
             echo "::set-output name=minor::${BASH_REMATCH[2]}"
