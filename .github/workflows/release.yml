@@ -60,7 +60,7 @@ jobs:
           for RAW_DICT in *.csv; \
             do tail -n +2 ./$RAW_DICT \
               | sed -r 's/(.*),(.*),(.*),(.*)/\2,\1,\4,/g' \
-              > TermJa-${{ steps.version_tag.outputs.tag }}/macOS/${RAW_DICT%.csv}.txt; \
+              > TermJa-${{ steps.version_tag.outputs.tag }}/macOS/TermJa-${{ steps.version_tag.outputs.tag }}_${RAW_DICT%.csv}.txt; \
             done
 
       # （UTF-8ではエラーを吐くので、SHIFT-JISを選択）
@@ -71,7 +71,7 @@ jobs:
             tail -n +2 ./$RAW_DICT \
               | sed -r 's/(.*),(.*),(.*),(.*)/\2\t\1\t\3/g' \
               | iconv -t SHIFT-JIS \
-              > TermJa-${{ steps.version_tag.outputs.tag }}/Windows/${RAW_DICT%.csv}.txt;
+              > TermJa-${{ steps.version_tag.outputs.tag }}/Windows/TermJa-${{ steps.version_tag.outputs.tag }}_${RAW_DICT%.csv}.txt;
           done
 
       - name: Archive
